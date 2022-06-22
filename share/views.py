@@ -10,6 +10,8 @@ from .models import *
 # Create your views here.
 def index(request):
     return render(request, 'main/index.html')
+def home(request):
+    return render(request, 'main/home.html')
 
 class SignUpView(View):
     form_class = SignUpForm
@@ -46,3 +48,22 @@ class CustomLoginView(LoginView):
             self.request.session.modified = True
          # else browser session will be as long as the session cookie time "SESSION_COOKIE_AGE" defined in settings.py
         return super(CustomLoginView,self).form_valid(form)
+
+
+def viewProfile(request):
+    # posts = request.user.posts.all()
+    if request.method == 'POST':
+        user_form = UpdateUserForm(request.POST, instance=request.user)
+        profile_form = UpdateProfileForm(request.POST,request.FILES,instance=request.user.profile)
+        
+        
+        if profile_form.is_valid() and  user_form.is_valid():             
+            user_form.save()         
+            profile_form.save()
+            return redirect (to='viewProfile')
+            # return HttpResponseRedirect(request.path_info)    
+    else:
+        profile_form = UpdateProfileForm(instance=request.user.profile)
+        user_form = UpdateUserForm(instance=request.user)
+       
+    return render(request,'main/profile.html', {'profile_form': profile_form,'user_form': user_form, })
