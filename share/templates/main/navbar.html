@@ -1,0 +1,36 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+       
+        <form class="form-inline my-2 my-lg-0" style="margin-left: 24rem!important;">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            
+        </form>
+         <ul class="navbar-nav mr-auto" style="margin-left: 15rem!important;">
+             <li class="nav-item active" style="margin-left: 2rem; margin-top: 0.5rem;">
+                 <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
+             </li>
+             <li class="nav-item" style="margin-left: 2rem; margin-top: 0.5rem;">
+                 <a class="nav-link" href="#"><i class='bx bxs-add-to-queue' style="font-size: 1.3rem;"></i></a>
+             </li>
+             <li class="nav-item dropdown" style="margin-left: 2rem;">
+                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                     aria-haspopup="true" aria-expanded="false">
+                     <i class="bi bi-person-circle" style="font-size: 1.3rem;"></i>
+                     <!-- <i style="font-size: 1.5rem;" class=" bi bi-person-circle"></i> -->
+                 </a>
+                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                     <a class="dropdown-item" href="{% url 'viewProfile' %}">Profile</a>
+                     <a class="dropdown-item" href="#">Logout</a>
+                     
+                 </div>
+             </li>            
+         </ul>
+    </div>
+</nav>
