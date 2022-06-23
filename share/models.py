@@ -45,11 +45,17 @@ class Profile(models.Model):
     
     
 class Video(models.Model):
-    
+    likes = models.ManyToManyField(User, related_name='likes', blank=True) 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='video', default=1)
     caption = models.CharField(max_length=100)
     video = models.FileField(upload_to='videos/', blank=True, storage=VideoMediaCloudinaryStorage(),
                               validators=[validate_video])
+    pub_date = models.DateTimeField(auto_now_add=True, blank=True)
+    
+    @classmethod
+    def videos(cls):
+        videos = cls.objects.all()
+        return videos
     
     def __str__(self):
         return self.caption
@@ -64,3 +70,10 @@ class Comment(models.Model):
         
     def __str__(self):
         return self.comment
+    
+class Follow(models.Model):
+    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
+    followed = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='followers')
+
+    def __str__(self):
+        return f'{self.follower} Follow'
