@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
+from django.urls import reverse
 from django.views import View
 from .forms import *
 from django.http import HttpResponseRedirect
@@ -11,7 +12,9 @@ from .models import *
 def index(request):
     return render(request, 'main/index.html')
 def home(request):
-    return render(request, 'main/home.html')
+    videos = Video.objects.all()
+    
+    return render(request, 'main/home.html', {'videos':videos})
 
 class SignUpView(View):
     form_class = SignUpForm
@@ -51,19 +54,78 @@ class CustomLoginView(LoginView):
 
 
 def viewProfile(request):
-    # posts = request.user.posts.all()
+    videos = request.user.video.all()
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
         profile_form = UpdateProfileForm(request.POST,request.FILES,instance=request.user.profile)
         
         
         if profile_form.is_valid() and  user_form.is_valid():             
-            user_form.save()         
-            profile_form.save()
+            userform =  user_form.save(commit=False)         
+            profileform = profile_form.save(commit=False)
+            profileform.save()
+            userform.save()
             return redirect (to='viewProfile')
             # return HttpResponseRedirect(request.path_info)    
     else:
         profile_form = UpdateProfileForm(instance=request.user.profile)
         user_form = UpdateUserForm(instance=request.user)
        
-    return render(request,'main/profile.html', {'profile_form': profile_form,'user_form': user_form, })
+    return render(request,'main/profile.html', {'profile_form': profile_form,'user_form': user_form,'videos':videos })
+
+def postVideo(request):
+    current_user = request.user
+    if request.method == 'POST':
+        video_form = VideoForm(request.POST,request.FILES,instance=request.user.profile)
+        if video_form.is_valid():
+            video = video_form.save(commit=False)
+            video.user = current_user
+            video.save()
+            return redirect(to='home')
+    else:
+        video_form = VideoForm()
+    context ={
+        'video_form': video_form,
+            
+    }
+            
+    return render(request, 'main/post.html',context)
+
+
+def comment(request, id):
+    video = get_object_or_404(Video, pk=id)
+    comments = video.comment.all()
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.video = video
+            comment.user = request.user.profile
+            comment.save()
+            return HttpResponseRedirect(request.path_info)
+    else:
+        form = CommentForm()
+    params = {
+        'video': video,
+        'form': form,
+        'comments':comments,
+    }
+    
+    return render(request, 'main/comments.html',params)
+
+def like_post(request,id):
+    video = Video.objects.get(pk=id)
+    is_liked = False
+    user=request.user.profile
+    try:
+        profile=Profile.objects.get(user=user.user)
+        print(profile)
+    except Profile.DoesNotExist:
+        raise Http404()
+    if video.likes.filter(id=user.user.id).exists():
+        video.likes.remove(user.user)
+        is_liked=False
+    else:
+        video.likes.add(user.user)
+        is_liked=True
+    return HttpResponseRedirect(reverse('home'))
