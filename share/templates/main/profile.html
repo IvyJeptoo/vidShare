@@ -20,7 +20,7 @@
                                     style="padding: 2rem; background: #344341; margin-bottom: 1rem; min-width: 25rem;">
                                     
                                         <div class="profile-stats" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 5rem; color: white;">
-                                            <h5>posts</h5>
+                                            <h5><span>{{videos.count}}</span> posts</h5>
                                             <h5>followers</h5>
                                             <h5>following</h5>                                          
 
@@ -96,21 +96,47 @@
                                      <button type="button" class="btn btn-outline-dark btn-sm mt-3"
                                          data-toggle="modal" data-target="#exampleModal">Edit Profile</button>
 
-                                </ul>
+                                         
+
+                                </ul>                              
 
                             </div>
                         </div>
+                        
+                        <hr>
                     </div>
                 </div>
-            </div>       
-             
-          
+            </div> 
+            
+            <div class="container-fluid" ">
+                <div class="row">
+                    {% for video in videos %}
+                    <div class="col-md-4 d-flex"
+                        style="justify-content: space-evenly !important; align-items: center !important; gap: 20px !important;">
+                        <div class="card" style="width: 30rem;">
+                            <video class="embed-responsive embed-responsive-16by9" controls="controls">
+                                <source style="height: 40rem;" src="{{video.video.url}}" type="video/mp4" />
+                            </video>
+                            <div class="ml-4 mt-3">
+                                <p><strong>#</strong>{{video.caption}}</p>
 
+                                <a title="Add comment" href="{% url 'comment' video.id  %}"><i class='bx bx-comment'
+                                        style="font-size: 1.3rem"></i></a>&nbsp; &nbsp;
 
-              
-
-
-
+                                
+                                <a title="Like Video" href="{% url 'like' video.id %}" class="text-dark">
+                                    <i class='bx bx-like'
+                                        style="font-size: 1.2rem; margin-left: 12rem;"></i><span>{{ video.likes.count }}
+                                        Likes</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+      
+            
             </div>
         </div>
 </section>
